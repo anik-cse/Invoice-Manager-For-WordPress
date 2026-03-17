@@ -308,3 +308,38 @@ header.entry-header.ast-no-thumbnail {
     .mim-form-row { flex-direction: column; gap: 0; }
     .mim-invoice-table { display: block; overflow-x: auto; }
 }
+
+/* Login / Permission Notices */
+.mim-notice {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 950px;
+    margin: 40px auto;
+    padding: 18px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+.mim-notice-warning {
+    background: #fffbeb;
+    border-left: 5px solid #f59e0b;
+    color: #92400e;
+}
+.mim-notice-warning::before {
+    content: "⚠️";
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.mim-notice-error {
+    background: #fff5f5;
+    border-left: 5px solid #e53e3e;
+    color: #742a2a;
+}
+.mim-notice-error::before {
+    content: "🔒";
+    font-size: 22px;
+    flex-shrink: 0;
+}
+

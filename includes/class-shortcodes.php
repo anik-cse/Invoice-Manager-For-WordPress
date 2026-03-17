@@ -26,14 +26,14 @@ class MIM_Shortcodes {
 
     public function render_app( $atts ) {
         if ( ! is_user_logged_in() ) {
-            return '<p>' . esc_html__( 'Please log in to manage your invoices.', 'mir-invoice-manager' ) . '</p>';
+            return '<div class="mim-notice mim-notice-warning">' . esc_html__( 'Please log in to manage your invoices.', 'mir-invoice-manager' ) . '</div>';
         }
 
         $nav_style = 'max-width: 950px; margin: 40px auto -20px auto; display: flex; justify-content: space-between; align-items: center;';
 
         if ( isset( $_GET['mim_action'] ) && $_GET['mim_action'] === 'create' ) {
             if ( ! isset( $_GET['mim_frontend_nonce'] ) || ! wp_verify_nonce( $_GET['mim_frontend_nonce'], 'mim_frontend_nonce' ) ) {
-                return '<p>' . esc_html__( 'Security check failed. Please return to the dashboard and try again.', 'mir-invoice-manager' ) . '</p>';
+                return '<div class="mim-notice mim-notice-error">' . esc_html__( 'Security check failed. Please return to the dashboard and try again.', 'mir-invoice-manager' ) . '</div>';
             }
             return '<div class="mim-nav" style="' . $nav_style . '"><h2 style="margin: 0;">' . esc_html__( 'Create New Invoice', 'mir-invoice-manager' ) . '</h2><a href="' . esc_url( remove_query_arg( array('mim_action', 'mim_edit', 'mim_frontend_nonce') ) ) . '" class="mim-btn mim-btn-secondary">&laquo; ' . esc_html__( 'Back to Dashboard', 'mir-invoice-manager' ) . '</a></div>' . $this->render_create_form();
         }
@@ -41,7 +41,7 @@ class MIM_Shortcodes {
         if ( isset( $_GET['mim_edit'] ) ) {
             $edit_id = intval( $_GET['mim_edit'] );
             if ( ! isset( $_GET['mim_frontend_nonce'] ) || ! wp_verify_nonce( $_GET['mim_frontend_nonce'], 'mim_frontend_nonce' ) ) {
-                return '<p>' . esc_html__( 'Security check failed. Please return to the dashboard and try again.', 'mir-invoice-manager' ) . '</p>';
+                return '<div class="mim-notice mim-notice-error">' . esc_html__( 'Security check failed. Please return to the dashboard and try again.', 'mir-invoice-manager' ) . '</div>';
             }
             return '<div class="mim-nav" style="' . $nav_style . '"><h2 style="margin: 0;">' . esc_html__( 'Edit Invoice', 'mir-invoice-manager' ) . '</h2><a href="' . esc_url( remove_query_arg( array('mim_action', 'mim_edit', 'mim_frontend_nonce') ) ) . '" class="mim-btn mim-btn-secondary">&laquo; ' . esc_html__( 'Back to Dashboard', 'mir-invoice-manager' ) . '</a></div>' . $this->render_edit_form( array( 'id' => $edit_id ) );
         }
@@ -56,7 +56,7 @@ class MIM_Shortcodes {
 
     public function render_dashboard( $atts ) {
         if ( ! is_user_logged_in() ) {
-            return '<p>' . esc_html__( 'Please log in to view your invoices.', 'mir-invoice-manager' ) . '</p>';
+            return '<div class="mim-notice mim-notice-warning">' . esc_html__( 'Please log in to view your invoices.', 'mir-invoice-manager' ) . '</div>';
         }
 
         // Save current page URL BEFORE the loop — inside the loop get_permalink() returns the invoice CPT URL
@@ -129,14 +129,14 @@ class MIM_Shortcodes {
 
     public function render_create_form() {
         if ( ! is_user_logged_in() ) {
-            return '<p>' . esc_html__( 'Please log in to create invoices.', 'mir-invoice-manager' ) . '</p>';
+            return '<div class="mim-notice mim-notice-warning">' . esc_html__( 'Please log in to create invoices.', 'mir-invoice-manager' ) . '</div>';
         }
         return $this->get_form_html();
     }
 
     public function render_edit_form( $atts ) {
         if ( ! is_user_logged_in() ) {
-            return '<p>' . esc_html__( 'Please log in to edit invoices.', 'mir-invoice-manager' ) . '</p>';
+            return '<div class="mim-notice mim-notice-warning">' . esc_html__( 'Please log in to edit invoices.', 'mir-invoice-manager' ) . '</div>';
         }
 
         $atts = shortcode_atts( array( 'id' => 0 ), $atts, 'invoice_edit' );
@@ -148,7 +148,7 @@ class MIM_Shortcodes {
         }
 
         if ( ! $invoice_id || ! MIM_Security::user_owns_invoice( $invoice_id ) ) {
-            return '<p>' . esc_html__( 'Invalid invoice or permission denied.', 'mir-invoice-manager' ) . '</p>';
+            return '<div class="mim-notice mim-notice-error">' . esc_html__( 'Invalid invoice or permission denied.', 'mir-invoice-manager' ) . '</div>';
         }
 
         return $this->get_form_html( $invoice_id );
