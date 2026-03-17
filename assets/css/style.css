@@ -1,0 +1,310 @@
+/* Frontend Invoice Form Styles - Premium Theme (#006678) */
+.mim-form-wrapper, .mim-dashboard-wrapper {
+    max-width: 950px;
+    margin: 40px auto;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: #2c3338;
+}
+
+/* Align theme header (e.g. Astra theme) with the plugin's invoice layout */
+header.entry-header.ast-no-thumbnail {
+    max-width: 950px;
+    margin: 40px auto 0 auto;
+}
+
+.mim-form-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.mim-form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+
+.mim-form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mim-form-group input, 
+.mim-form-group textarea, 
+.mim-form-group select {
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: #fcfcfc;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+    height: 48px; /* Force consistent height */
+}
+
+.mim-form-group textarea {
+    height: auto; /* Except text areas */
+}
+
+.mim-form-group input:focus, 
+.mim-form-group textarea:focus, 
+.mim-form-group select:focus {
+    border-color: #006678;
+    background-color: #ffffff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 102, 120, 0.15);
+}
+
+.mim-items-wrapper {
+    margin: 35px 0;
+    padding: 30px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.mim-items-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 20px;
+}
+
+.mim-items-table th {
+    padding: 14px 10px;
+    text-align: left;
+    color: #4a5568;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.mim-items-table td {
+    padding: 12px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.mim-items-table input,
+.mim-items-table select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    height: 44px; /* Fix vertical cropping in line item selects */
+}
+
+.mim-items-table input:focus,
+.mim-items-table select:focus {
+    border-color: #006678;
+    outline: none;
+}
+
+.mim-line-total {
+    font-weight: 600;
+    color: #2d3748;
+    padding-top: 14px !important;
+}
+
+/* Buttons */
+.mim-btn {
+    padding: 12px 24px;
+    border: none;
+    border-bottom: none !important; /* Theme override */
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none !important; /* Theme override */
+    display: inline-block;
+    transition: all 0.25s ease;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+}
+
+.mim-btn-primary { 
+    background: #006678; 
+    color: #ffffff; 
+    box-shadow: 0 4px 10px rgba(0, 102, 120, 0.25);
+}
+.mim-btn-primary:hover { 
+    background: #008299; 
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 102, 120, 0.3);
+}
+.mim-btn-primary:active {
+    transform: translateY(1px);
+}
+
+.mim-btn-secondary { 
+    background: #edf2f7; 
+    color: #4a5568; 
+}
+.mim-btn-secondary:hover { 
+    background: #e2e8f0; 
+    color: #2d3748;
+}
+
+.mim-btn-remove-item {
+    background: #feebc8;
+    color: #c05621;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+    height: 44px; /* Match input height */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mim-btn-remove-item:hover {
+    background: #fbd38d;
+    color: #9c4221;
+}
+
+/* Info Boxes */
+.mim-info-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: box-shadow 0.3s ease;
+}
+
+.mim-info-box:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+}
+
+.mim-info-box h4 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #006678;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 12px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.mim-totals {
+    text-align: right;
+    margin: 30px 0;
+    padding-top: 25px;
+    border-top: 2px solid #e2e8f0;
+}
+
+.mim-totals h3 {
+    font-size: 26px;
+    color: #2d3748;
+    margin: 0;
+    font-weight: 700;
+}
+
+/* Dashboard Styles */
+.mim-invoice-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.04);
+    border: 1px solid #e2e8f0;
+}
+
+.mim-invoice-table th, .mim-invoice-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #edf2f7;
+    text-align: left;
+}
+
+.mim-invoice-table th { 
+    background: #f8fafc; 
+    font-weight: 600; 
+    color: #4a5568;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.mim-invoice-table tr:last-child td {
+    border-bottom: none;
+}
+
+.mim-invoice-table tr {
+    transition: background-color 0.2s ease;
+}
+
+.mim-invoice-table tr:hover { 
+    background: #fcfcfc; 
+}
+
+.mim-status-dropdown { 
+    padding: 8px 12px; 
+    border-radius: 6px; 
+    border: 1px solid #cbd5e0; 
+    font-weight: 500;
+    color: #2d3748;
+    background-color: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
+    height: 36px;
+}
+.mim-status-dropdown:focus {
+    border-color: #006678;
+    outline: none;
+}
+
+/* Dashboard Action Buttons */
+.mim-invoice-table .mim-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    margin-right: 6px;
+}
+
+.mim-btn-edit { 
+    background: #ebf8ff; 
+    color: #006678; 
+}
+.mim-btn-edit:hover { 
+    background: #bee3f8; 
+}
+
+.mim-btn-pdf { 
+    background: #f0fff4; 
+    color: #38a169; 
+}
+.mim-btn-pdf:hover { 
+    background: #c6f6d5; 
+}
+
+.mim-btn-delete { 
+    background: #fff5f5; 
+    color: #e53e3e; 
+}
+.mim-btn-delete:hover { 
+    background: #fed7d7; 
+}
+
+@media (max-width: 768px) {
+    .mim-form-row { flex-direction: column; gap: 0; }
+    .mim-invoice-table { display: block; overflow-x: auto; }
+}

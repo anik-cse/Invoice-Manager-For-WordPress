@@ -1,0 +1,315 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class MIM_Shortcodes {
+    public function __construct() {
+        add_shortcode( 'invoice_dashboard', array( $this, 'render_dashboard' ) );
+        add_shortcode( 'invoice_create', array( $this, 'render_create_form' ) );
+        add_shortcode( 'invoice_edit', array( $this, 'render_edit_form' ) );
+        add_shortcode( 'mir_invoice_manager', array( $this, 'render_app' ) );
+    }
+
+    public static function get_currency_symbol( $currency ) {
+        $currencies = array(
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'BDT' => '৳',
+            'INR' => '₹',
+            'AUD' => 'A$',
+            'CAD' => 'C$',
+        );
+        return isset( $currencies[ $currency ] ) ? $currencies[ $currency ] : $currency . ' ';
+    }
+
+    public function render_app( $atts ) {
+        if ( ! is_user_logged_in() ) {
+            return '<p>' . esc_html__( 'Please log in to manage your invoices.', 'mir-invoice-manager' ) . '</p>';
+        }
+
+        if ( isset( $_GET['mim_action'] ) && $_GET['mim_action'] === 'create' ) {
+            return '<div class="mim-nav" style="margin-bottom: 20px;"><a href="' . esc_url( remove_query_arg( array('mim_action', 'mim_edit') ) ) . '" class="mim-btn mim-btn-secondary">&laquo; ' . esc_html__( 'Back to Dashboard', 'mir-invoice-manager' ) . '</a></div>' . $this->render_create_form();
+        }
+
+        if ( isset( $_GET['mim_edit'] ) ) {
+            return '<div class="mim-nav" style="margin-bottom: 20px;"><a href="' . esc_url( remove_query_arg( array('mim_action', 'mim_edit') ) ) . '" class="mim-btn mim-btn-secondary">&laquo; ' . esc_html__( 'Back to Dashboard', 'mir-invoice-manager' ) . '</a></div>' . $this->render_edit_form( array( 'id' => intval( $_GET['mim_edit'] ) ) );
+        }
+
+        // Render dashboard with a create button
+        $create_url = add_query_arg( 'mim_action', 'create' );
+        $create_url = add_query_arg( 'mim_action', 'create', get_permalink() );
+        $header = '<div class="mim-nav" style="text-align: right; margin-bottom: 20px;"><a href="' . esc_url( $create_url ) . '" class="mim-btn mim-btn-primary">' . esc_html__( 'Create Invoice', 'mir-invoice-manager' ) . '</a></div>';
+        
+        return $header . $this->render_dashboard( array() );
+    }
+
+    public function render_dashboard( $atts ) {
+        if ( ! is_user_logged_in() ) {
+            return '<p>' . esc_html__( 'Please log in to view your invoices.', 'mir-invoice-manager' ) . '</p>';
+        }
+
+        $args = array(
+            'post_type'      => 'invoice',
+            'posts_per_page' => -1,
+            'author'         => get_current_user_id(),
+            'post_status'    => array( 'publish', 'draft' )
+        );
+        $invoices = new WP_Query( $args );
+
+        ob_start();
+        ?>
+        <div class="mim-dashboard-wrapper">
+            <table class="mim-invoice-table">
+                <thead>
+                    <tr>
+                        <th><?php esc_html_e( 'ID', 'mir-invoice-manager' ); ?></th>
+                        <th><?php esc_html_e( 'Client', 'mir-invoice-manager' ); ?></th>
+                        <th><?php esc_html_e( 'Amount', 'mir-invoice-manager' ); ?></th>
+                        <th><?php esc_html_e( 'Status', 'mir-invoice-manager' ); ?></th>
+                        <th><?php esc_html_e( 'Date', 'mir-invoice-manager' ); ?></th>
+                        <th><?php esc_html_e( 'Actions', 'mir-invoice-manager' ); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ( $invoices->have_posts() ) : ?>
+                        <?php while ( $invoices->have_posts() ) : $invoices->the_post(); 
+                            $invoice_id = get_the_ID();
+                            $client     = get_post_meta( $invoice_id, '_client_name', true );
+                            $amount     = get_post_meta( $invoice_id, '_total', true );
+                            $status     = get_post_meta( $invoice_id, '_status', true );
+                            $currency   = get_post_meta( $invoice_id, '_payment_currency', true );
+                            $sym        = self::get_currency_symbol( $currency ? $currency : 'USD' );
+                            $date       = get_the_date();
+                            $pdf_url    = add_query_arg( array( 'mim_download_pdf' => $invoice_id, 'mim_nonce' => wp_create_nonce( 'mim_pdf_' . $invoice_id ) ), site_url() );
+                        ?>
+                        <tr data-id="<?php echo esc_attr( $invoice_id ); ?>">
+                            <td>#<?php echo esc_html( $invoice_id ); ?></td>
+                            <td><?php echo esc_html( $client ); ?></td>
+                            <td><?php echo esc_html( $sym . number_format( (float) $amount, 2 ) ); ?></td>
+                            <td>
+                                <select class="mim-status-dropdown">
+                                    <?php foreach ( array( 'Draft', 'Sent', 'Paid', 'Overdue' ) as $s ) : ?>
+                                        <option value="<?php echo esc_attr( $s ); ?>" <?php selected( $status, $s ); ?>><?php echo esc_html( $s ); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                            <td><?php echo esc_html( $date ); ?></td>
+                            <td>
+                                <a href="?mim_edit=<?php echo esc_attr( $invoice_id ); ?>" class="mim-btn mim-btn-edit"><?php esc_html_e( 'Edit', 'mir-invoice-manager' ); ?></a>
+                                <button class="mim-btn mim-btn-delete" data-id="<?php echo esc_attr( $invoice_id ); ?>"><?php esc_html_e( 'Delete', 'mir-invoice-manager' ); ?></button>
+                                <a href="<?php echo esc_url( $pdf_url ); ?>" class="mim-btn mim-btn-pdf" target="_blank"><?php esc_html_e( 'PDF', 'mir-invoice-manager' ); ?></a>
+                            </td>
+                        </tr>
+                        <?php endwhile; wp_reset_postdata(); ?>
+                    <?php else : ?>
+                        <tr><td colspan="6"><?php esc_html_e( 'No invoices found.', 'mir-invoice-manager' ); ?></td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            <div id="mim-dashboard-message" style="display:none; padding-top: 15px;"></div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function render_create_form() {
+        if ( ! is_user_logged_in() ) {
+            return '<p>' . esc_html__( 'Please log in to create invoices.', 'mir-invoice-manager' ) . '</p>';
+        }
+        return $this->get_form_html();
+    }
+
+    public function render_edit_form( $atts ) {
+        if ( ! is_user_logged_in() ) {
+            return '<p>' . esc_html__( 'Please log in to edit invoices.', 'mir-invoice-manager' ) . '</p>';
+        }
+
+        $atts = shortcode_atts( array( 'id' => 0 ), $atts, 'invoice_edit' );
+        $invoice_id = intval( $atts['id'] );
+
+        // Support dynamic rendering via GET parameter
+        if ( isset( $_GET['mim_edit'] ) ) {
+            $invoice_id = intval( $_GET['mim_edit'] );
+        }
+
+        if ( ! $invoice_id || ! MIM_Security::user_owns_invoice( $invoice_id ) ) {
+            return '<p>' . esc_html__( 'Invalid invoice or permission denied.', 'mir-invoice-manager' ) . '</p>';
+        }
+
+        return $this->get_form_html( $invoice_id );
+    }
+
+    private function get_form_html( $invoice_id = 0 ) {
+        $client_name  = $invoice_id ? get_post_meta( $invoice_id, '_client_name', true ) : '';
+        $client_email = $invoice_id ? get_post_meta( $invoice_id, '_client_email', true ) : '';
+        $client_phone = $invoice_id ? get_post_meta( $invoice_id, '_client_phone', true ) : '';
+        $client_addr  = $invoice_id ? get_post_meta( $invoice_id, '_client_addr', true ) : '';
+        
+        $sender_name  = $invoice_id ? get_post_meta( $invoice_id, '_sender_name', true ) : 'Mir Monoarul Alam';
+        $sender_email = $invoice_id ? get_post_meta( $invoice_id, '_sender_email', true ) : 'anik_cse@live.com';
+        $sender_phone = $invoice_id ? get_post_meta( $invoice_id, '_sender_phone', true ) : '01713289118';
+        $sender_addr  = $invoice_id ? get_post_meta( $invoice_id, '_sender_addr', true ) : "Dhaka, Bangladesh";
+
+        $payment_method = $invoice_id ? get_post_meta( $invoice_id, '_payment_method', true ) : '';
+        $payment_currency = $invoice_id ? get_post_meta( $invoice_id, '_payment_currency', true ) : 'USD';
+
+        $default_logo = MIM_PLUGIN_URL . 'assets/img/logo.png';
+        $logo_url     = $invoice_id ? get_post_meta( $invoice_id, '_logo_url', true ) : $default_logo;
+        $due_date     = $invoice_id ? get_post_meta( $invoice_id, '_due_date', true ) : '';
+        $notes        = $invoice_id ? get_post_meta( $invoice_id, '_notes', true ) : '';
+        $items        = $invoice_id ? get_post_meta( $invoice_id, '_items', true ) : array();
+        
+        if ( empty( $items ) || ! is_array( $items ) ) {
+            $items = array( array( 'name' => '', 'type' => 'fixed', 'qty' => 1, 'price' => 0.00 ) );
+        }
+
+        ob_start();
+        ?>
+        <div class="mim-form-wrapper">
+            <form id="mim-invoice-form">
+                <input type="hidden" name="invoice_id" value="<?php echo esc_attr( $invoice_id ); ?>">
+                
+                <div class="mim-form-row">
+                    <div class="mim-form-group">
+                        <label><?php esc_html_e( 'Due Date', 'mir-invoice-manager' ); ?></label>
+                        <input type="date" name="due_date" value="<?php echo esc_attr( $due_date ); ?>">
+                    </div>
+                    <div class="mim-form-group">
+                        <label><?php esc_html_e( 'Logo Image URL', 'mir-invoice-manager' ); ?></label>
+                        <input type="url" name="logo_url" value="<?php echo esc_url( $logo_url ); ?>" placeholder="https://example.com/logo.png">
+                    </div>
+                </div>
+
+                <!-- Sender Info -->
+                <div class="mim-info-box">
+                    <h4><?php esc_html_e( 'My Business / Sender Info', 'mir-invoice-manager' ); ?></h4>
+                    <div class="mim-form-row">
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'My Name / Company', 'mir-invoice-manager' ); ?></label>
+                            <input type="text" name="sender_name" value="<?php echo esc_attr( $sender_name ); ?>" placeholder="e.g. Acme Corp">
+                        </div>
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'My Email', 'mir-invoice-manager' ); ?></label>
+                            <input type="email" name="sender_email" value="<?php echo esc_attr( $sender_email ); ?>">
+                        </div>
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'My Phone', 'mir-invoice-manager' ); ?></label>
+                            <input type="text" name="sender_phone" value="<?php echo esc_attr( $sender_phone ); ?>">
+                        </div>
+                    </div>
+                    <div class="mim-form-group">
+                        <label><?php esc_html_e( 'My Address', 'mir-invoice-manager' ); ?></label>
+                        <textarea name="sender_addr" rows="2"><?php echo esc_textarea( $sender_addr ); ?></textarea>
+                    </div>
+                </div>
+
+                <!-- Payment Settings -->
+                <div class="mim-info-box">
+                    <h4><?php esc_html_e( 'Payment Info', 'mir-invoice-manager' ); ?></h4>
+                    <div class="mim-form-row">
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'Payment Method / Instructions', 'mir-invoice-manager' ); ?></label>
+                            <input type="text" name="payment_method" value="<?php echo esc_attr( $payment_method ); ?>" placeholder="e.g. Bank Transfer (Routing #...)">
+                        </div>
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'Currency', 'mir-invoice-manager' ); ?></label>
+                            <select name="payment_currency" id="mim-payment-currency">
+                                <?php foreach( array( 'USD', 'EUR', 'GBP', 'BDT', 'INR', 'AUD', 'CAD' ) as $curr ) : ?>
+                                    <option value="<?php echo esc_attr( $curr ); ?>" <?php selected( $payment_currency, $curr ); ?>><?php echo esc_html( $curr ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Info -->
+                <div class="mim-info-box">
+                    <h4><?php esc_html_e( 'Client Details', 'mir-invoice-manager' ); ?></h4>
+                    <div class="mim-form-row">
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'Client Name', 'mir-invoice-manager' ); ?> *</label>
+                            <input type="text" name="client_name" value="<?php echo esc_attr( $client_name ); ?>" required>
+                        </div>
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'Client Email', 'mir-invoice-manager' ); ?> *</label>
+                            <input type="email" name="client_email" value="<?php echo esc_attr( $client_email ); ?>" required>
+                        </div>
+                        <div class="mim-form-group">
+                            <label><?php esc_html_e( 'Client Phone', 'mir-invoice-manager' ); ?></label>
+                            <input type="text" name="client_phone" value="<?php echo esc_attr( $client_phone ); ?>">
+                        </div>
+                    </div>
+                    <div class="mim-form-group">
+                        <label><?php esc_html_e( 'Client Address', 'mir-invoice-manager' ); ?></label>
+                        <textarea name="client_addr" rows="2"><?php echo esc_textarea( $client_addr ); ?></textarea>
+                    </div>
+                </div>
+
+                <div class="mim-form-row">
+                    <div class="mim-form-group">
+                        <label><?php esc_html_e( 'Due Date', 'mir-invoice-manager' ); ?></label>
+                        <input type="date" name="due_date" value="<?php echo esc_attr( $due_date ); ?>">
+                    </div>
+                    <div class="mim-form-group">
+                        <label><?php esc_html_e( 'Logo Image URL', 'mir-invoice-manager' ); ?></label>
+                        <input type="url" name="logo_url" value="<?php echo esc_url( $logo_url ); ?>" placeholder="https://example.com/logo.png">
+                    </div>
+                </div>
+
+                <div class="mim-items-wrapper">
+                    <h4><?php esc_html_e( 'Invoice Items', 'mir-invoice-manager' ); ?></h4>
+                    <table class="mim-items-table" id="mim-items-table">
+                        <thead>
+                            <tr>
+                                <th><?php esc_html_e( 'Item Description', 'mir-invoice-manager' ); ?></th>
+                                <th><?php esc_html_e( 'Type', 'mir-invoice-manager' ); ?></th>
+                                <th><?php esc_html_e( 'Qty / Hours', 'mir-invoice-manager' ); ?></th>
+                                <th><?php esc_html_e( 'Price / Rate', 'mir-invoice-manager' ); ?></th>
+                                <th><?php esc_html_e( 'Total', 'mir-invoice-manager' ); ?></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ( $items as $index => $item ) : ?>
+                            <tr class="mim-item-row">
+                                <td><input type="text" name="items[<?php echo $index; ?>][name]" value="<?php echo esc_attr( $item['name'] ); ?>" class="mim-item-name" required></td>
+                                <td>
+                                    <select name="items[<?php echo $index; ?>][type]" class="mim-item-type">
+                                        <option value="fixed" <?php selected( $item['type'] ?? 'fixed', 'fixed' ); ?>><?php esc_html_e( 'Fixed', 'mir-invoice-manager' ); ?></option>
+                                        <option value="hourly" <?php selected( $item['type'] ?? 'fixed', 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'mir-invoice-manager' ); ?></option>
+                                    </select>
+                                </td>
+                                <td><input type="number" min="0" step="0.01" name="items[<?php echo $index; ?>][qty]" value="<?php echo esc_attr( $item['qty'] ); ?>" class="mim-item-qty" required></td>
+                                <td><input type="number" min="0" step="0.01" name="items[<?php echo $index; ?>][price]" value="<?php echo esc_attr( $item['price'] ); ?>" class="mim-item-price" required></td>
+                                <td class="mim-line-total">0.00</td>
+                                <td><button type="button" class="mim-btn-remove-item">X</button></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <button type="button" id="mim-add-item" class="mim-btn mim-btn-secondary"><?php esc_html_e( '+ Add Item', 'mir-invoice-manager' ); ?></button>
+                </div>
+
+                <div class="mim-totals">
+                    <h3><?php esc_html_e( 'Total: ', 'mir-invoice-manager' ); ?><span id="mim-grand-total">0.00</span></h3>
+                </div>
+
+                <div class="mim-form-group">
+                    <label><?php esc_html_e( 'Notes', 'mir-invoice-manager' ); ?></label>
+                    <textarea name="notes" rows="4"><?php echo esc_textarea( $notes ); ?></textarea>
+                </div>
+
+                <div class="mim-form-submit">
+                    <button type="submit" class="mim-btn mim-btn-primary" id="mim-submit-btn">
+                        <?php echo $invoice_id ? esc_html__( 'Update Invoice', 'mir-invoice-manager' ) : esc_html__( 'Save Invoice', 'mir-invoice-manager' ); ?>
+                    </button>
+                    <span id="mim-form-message" style="display:none; margin-left:15px; font-weight:bold;"></span>
+                </div>
+            </form>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
