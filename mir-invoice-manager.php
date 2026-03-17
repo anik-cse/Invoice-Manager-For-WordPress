@@ -21,6 +21,7 @@ require_once MIM_PLUGIN_DIR . 'includes/class-post-type.php';
 require_once MIM_PLUGIN_DIR . 'includes/class-ajax.php';
 require_once MIM_PLUGIN_DIR . 'includes/class-shortcodes.php';
 require_once MIM_PLUGIN_DIR . 'includes/class-pdf.php';
+require_once MIM_PLUGIN_DIR . 'includes/class-admin.php';
 
 // Initialize the plugin
 function mim_init_plugin() {
@@ -29,6 +30,9 @@ function mim_init_plugin() {
     new MIM_Ajax();
     new MIM_Shortcodes();
     new MIM_PDF();
+    if ( is_admin() ) {
+        new MIM_Admin();
+    }
 }
 add_action( 'plugins_loaded', 'mim_init_plugin' );
 

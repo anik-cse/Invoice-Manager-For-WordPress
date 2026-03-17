@@ -4,6 +4,19 @@ All notable changes to **Mir Invoice Manager** will be documented in this file.
 
 ---
 
+## [1.1.0] — 2026-03-17
+
+### Added
+- Full WordPress Admin Dashboard support via new `class-admin.php`
+- Custom admin columns on the Invoice list screen: Client, Amount, Status, Due Date
+- Admin metabox on the invoice edit screen with all fields: client/sender info, payment info, logo URL, line items, notes, status
+- Live invoice total recalculation inside the admin metabox (via `admin.js`)
+- Add/remove item rows dynamically in admin metabox
+- `admin.css` and `admin.js` enqueued only on invoice screens
+- `MIM_Admin` only initialised when `is_admin()` is true (no frontend overhead)
+
+---
+
 ## [1.0.0] — 2026-03-17
 
 ### Added

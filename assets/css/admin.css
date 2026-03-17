@@ -1,0 +1,100 @@
+/* Admin Meta Box Styles — Mir Invoice Manager */
+
+.mim-admin-metabox h4 {
+    margin: 15px 0 10px;
+    font-size: 14px;
+    color: #006678;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.mim-admin-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.mim-admin-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+}
+
+.mim-admin-col label {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.mim-admin-col input[type="text"],
+.mim-admin-col input[type="email"],
+.mim-admin-col input[type="url"],
+.mim-admin-col input[type="date"],
+.mim-admin-col select,
+.mim-admin-col textarea {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.mim-admin-col textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.mim-admin-items-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.mim-admin-items-table th {
+    background: #f8f8f8;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #555;
+    border-bottom: 2px solid #ddd;
+}
+
+.mim-admin-items-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.mim-admin-items-table input,
+.mim-admin-items-table select {
+    padding: 5px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.mim-admin-line-total {
+    font-weight: 600;
+    color: #333;
+}
+
+.mim-admin-remove-item {
+    color: #dc3232 !important;
+    border-color: #dc3232 !important;
+    padding: 2px 8px !important;
+}
+
+.mim-admin-metabox hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 18px 0 10px;
+}
