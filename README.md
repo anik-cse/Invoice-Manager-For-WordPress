@@ -17,8 +17,8 @@ A full-featured **frontend invoice management system** for WordPress. Create, ed
 
 1. Upload the `mir-invoice-manager` folder to `/wp-content/plugins/`
 2. Activate the plugin through **Plugins** in WordPress admin
-3. A page called **Invoice Manager** is automatically created with the shortcode `[mir_invoice_manager]`
-4. Visit that page while logged in to start managing invoices
+3. A page called **Invoice Manager** is automatically created at `/invoice-manager/` with the shortcode `[mir_invoice_manager]`
+4. Visit `/invoice-manager/` while logged in to start managing invoices
 
 ## Shortcodes
 
@@ -38,6 +38,8 @@ A full-featured **frontend invoice management system** for WordPress. Create, ed
 ## Author
 
 **Mir Monoarul Alam** — [anik_cse@live.com](mailto:anik_cse@live.com)
+
+> ✨ **This plugin was developed using 100% Vibe Coding** — designed and built entirely through AI-assisted development.
 
 ## License
 
