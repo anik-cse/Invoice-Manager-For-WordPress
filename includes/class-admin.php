@@ -6,37 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class MIM_Admin {
 
     public function __construct() {
-        add_action( 'admin_menu',        array( $this, 'register_admin_menu' ) );
         add_action( 'add_meta_boxes',    array( $this, 'register_meta_boxes' ) );
         add_action( 'save_post_invoice', array( $this, 'save_invoice_meta' ), 10, 2 );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
         add_filter( 'manage_invoice_posts_columns',       array( $this, 'set_custom_columns' ) );
         add_action( 'manage_invoice_posts_custom_column', array( $this, 'render_custom_column' ), 10, 2 );
         add_filter( 'post_row_actions', array( $this, 'remove_quick_edit' ), 10, 2 );
-    }
-
-    /* -------------------------------------------------------------------------
-     * Admin Menu
-     * ---------------------------------------------------------------------- */
-    public function register_admin_menu() {
-        add_submenu_page(
-            'edit.php?post_type=invoice',
-            __( 'Create Invoice', 'mir-invoice-manager' ),
-            __( 'Create Invoice', 'mir-invoice-manager' ),
-            'publish_posts',
-            'new-invoice',
-            array( $this, 'render_create_page' )
-        );
-    }
-
-    public function render_create_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php esc_html_e( 'Create New Invoice', 'mir-invoice-manager' ); ?></h1>
-            <p><?php esc_html_e( 'Use the standard Add New Invoice screen below, or go to', 'mir-invoice-manager' ); ?>
-            <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=invoice' ) ); ?>"><?php esc_html_e( 'Add New Invoice', 'mir-invoice-manager' ); ?></a>.</p>
-        </div>
-        <?php
     }
 
     /* -------------------------------------------------------------------------
