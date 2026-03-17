@@ -5,7 +5,7 @@ A full-featured **frontend invoice management system** for WordPress. Create, ed
 ## Features
 
 - 📄 Create & edit invoices from the frontend
-- 🧾 Generate & download PDF invoices (print-ready)
+- 🧾 Generate, **download & print** PDF invoices (print-ready via browser)
 - 💰 Multi-currency support (USD, EUR, GBP, BDT, INR, AUD, CAD)
 - 🔁 Fixed & hourly billing types per line item
 - 📊 Real-time invoice total calculation
@@ -37,7 +37,11 @@ A full-featured **frontend invoice management system** for WordPress. Create, ed
 
 ## Author
 
-**Mir Monoarul Alam** — [anik_cse@live.com](mailto:anik_cse@live.com)
+**Mir Monoarul Alam (Anik)**
+
+I'm a **QA Engineer & WordPress Developer** based in Dhaka, Bangladesh, with hands-on experience in plugin development, test automation, and quality assurance. I'm actively available for freelance and contract projects.
+
+📧 [anik_cse@live.com](mailto:anik_cse@live.com) &nbsp;|&nbsp; 💼 Open to new projects
 
 > ✨ **This plugin was developed using 100% Vibe Coding** — designed and built entirely through AI-assisted development.
 
